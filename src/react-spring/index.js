@@ -1,6 +1,6 @@
-import { createHost } from '@react-spring/animated'
 import { TYPES } from '../utils/element'
-
+import { createHost } from '@react-spring/animated'
+import { applyDefaultProps } from '../utils/props'
 const primitives = Object.keys(TYPES)
 
 const host = createHost(primitives, {
@@ -8,7 +8,8 @@ const host = createHost(primitives, {
     if (!(instance.nodeType || instance.pluginName)) {
       return false
     }
-    instance.applyProps(instance, {}, props)
+    const applyProps = typeof instance?.applyProps === 'function' ? instance.applyProps : applyDefaultProps
+    applyProps(instance, {}, props)
   },
 })
 

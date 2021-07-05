@@ -128,8 +128,38 @@ declare namespace _ReactPixi {
     source?: AnySource;
   }
 
+  type InteractionEventTypes =
+    | 'click'
+    | 'mousedown'
+    | 'mousemove'
+    | 'mouseout'
+    | 'mouseover'
+    | 'mouseup'
+    | 'mouseupoutside'
+    | 'tap'
+    | 'touchstart'
+    | 'touchmove'
+    | 'touchend'
+    | 'touchendoutside'
+    | 'pointercancel'
+    | 'pointerout'
+    | 'pointerover'
+    | 'pointertap'
+    | 'pointerdown'
+    | 'pointerup'
+    | 'pointerupoutside'
+    | 'pointermove'
+    | 'rightclick'
+    | 'rightdown'
+    | 'rightup'
+    | 'rightupoutside'
+    | 'touchcancel'
+    | 'touchendoutside'
+    | 'touchmove'
+    | 'touchstart';
+
   type InteractionEvents = {
-    [P in PIXI.InteractionEventTypes]?: (
+    [P in InteractionEventTypes]?: (
       event: PIXI.InteractionEvent
     ) => void;
   };
@@ -303,6 +333,23 @@ declare namespace _ReactPixi {
       oldProps: Readonly<P>,
       newProps: Readonly<P>
     ): void;
+
+    /**
+     * Reconcile config
+     */
+    config?: {
+      /**
+       * Destroy instance on unmount?
+       * @default true
+       */
+      destroy?: boolean;
+
+      /**
+       * Destroy child instances?
+       * @default true
+       */
+      destroyChildren?: boolean
+    };
   }
 }
 
@@ -325,6 +372,9 @@ export const render: (
   container: PIXI.Container,
   callback?: (...args: any) => void
 ) => any;
+
+// unmount component
+export const unmountComponentAtNode: (container: PIXI.Container) => void;
 
 // context
 export const AppContext: React.Context<PIXI.Application>;

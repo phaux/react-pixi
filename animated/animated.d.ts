@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import * as React from 'react';
-import { ElementType, ComponentPropsWithRef } from '@react-spring/shared';
+import { ElementType, ComponentPropsWithRef } from '@react-spring/types';
 import { AnimatedProps } from 'react-spring';
 
 type AnimatedComponent<T extends ElementType> = React.ForwardRefExoticComponent<AnimatedProps<ComponentPropsWithRef<T>>>;
@@ -132,8 +132,38 @@ declare namespace _ReactPixi {
     source?: AnySource;
   }
 
+  type InteractionEventTypes =
+    | 'click'
+    | 'mousedown'
+    | 'mousemove'
+    | 'mouseout'
+    | 'mouseover'
+    | 'mouseup'
+    | 'mouseupoutside'
+    | 'tap'
+    | 'touchstart'
+    | 'touchmove'
+    | 'touchend'
+    | 'touchendoutside'
+    | 'pointercancel'
+    | 'pointerout'
+    | 'pointerover'
+    | 'pointertap'
+    | 'pointerdown'
+    | 'pointerup'
+    | 'pointerupoutside'
+    | 'pointermove'
+    | 'rightclick'
+    | 'rightdown'
+    | 'rightup'
+    | 'rightupoutside'
+    | 'touchcancel'
+    | 'touchendoutside'
+    | 'touchmove'
+    | 'touchstart';
+
   type InteractionEvents = {
-    [P in PIXI.InteractionEventTypes]?: (
+    [P in InteractionEventTypes]?: (
       event: PIXI.InteractionEvent
     ) => void;
   };

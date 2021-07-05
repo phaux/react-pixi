@@ -49,6 +49,19 @@ describe('stage', () => {
     expect(tree).toBeNull()
   })
 
+  test('use autoDensity by default', () => {
+    const renderAutoDensity = options =>
+      renderer.create(
+        <Stage options={{
+          view: document.createElement('canvas'),
+          ...options,
+        }} />
+      ).getInstance().app.renderer.options.autoDensity
+
+    expect(renderAutoDensity({})).toBeTruthy()
+    expect(renderAutoDensity({ autoDensity: false })).toBeFalsy()
+  })
+
   test('validate options.view', () => {
     const options = { view: 123 }
     expect(() => renderer.create(<Stage options={options} />).toJSON()).toThrow(
@@ -185,6 +198,8 @@ describe('stage', () => {
     PixiFiber.updateContainer.mockClear()
     el.unmount()
 
+    jest.advanceTimersByTime(1000);
+
     expect(PixiFiber.updateContainer).toHaveBeenCalledTimes(1)
     expect(PixiFiber.updateContainer).toHaveBeenCalledWith(null, instance.mountNode, instance)
   })
@@ -247,9 +262,8 @@ describe('stage', () => {
       )
 
       const app = el.getInstance().app
+      const ticker = el.getInstance()._ticker
       const spy = jest.spyOn(app.renderer, 'render')
-
-      console.log(spy.mock.calls.length)
 
       for (let i = 1; i <= 10; i++) {
         el.update(
@@ -258,10 +272,11 @@ describe('stage', () => {
               <Text text="hi world" />
             </Container>
           </Stage>
-        )
+        );
+        ticker.update()
       }
 
-      expect(spy).toBeCalledTimes(11)
+      expect(spy).toBeCalledTimes(10)
     })
   })
 

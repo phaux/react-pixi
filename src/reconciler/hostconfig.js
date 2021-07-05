@@ -31,14 +31,17 @@ function removeChild(parent, child) {
   }
 
   // unmount potential children
-  if (child.children?.length) {
+  if (child?.config?.destroyChildren !== false && child.children?.length) {
     ;[...child.children].forEach(c => {
       removeChild(child, c)
     })
   }
 
   parent.removeChild(child)
-  child.destroy()
+
+  if (child?.config?.destroy !== false) {
+    child.destroy()
+  }
 }
 
 function insertBefore(parent, child, beforeChild) {
@@ -156,7 +159,8 @@ const HostConfig = {
   createTextInstance(text, rootContainerInstance, internalInstanceHandler) {
     invariant(
       false,
-      'react-pixi: PixiFiber does not support text nodes as children of a Pixi component. ' +
+      'react-pixi: Error trying to add text node "' + text + '"',
+      'PixiFiber does not support text nodes as children of a Pixi component. ' +
         'To pass a string value to your component, use a property other than children. ' +
         'If you wish to display some text, you can use &lt;Text text={string} /&gt; instead.'
     )

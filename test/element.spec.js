@@ -22,7 +22,7 @@ describe('createElement', () => {
     expect(element).toBeInstanceOf(PIXI.Text)
   })
 
-   test('create Text as a sprite', () => {
+  test('create Text as a sprite', () => {
     const element = createElement(TYPES.Text, { text: 'foobar', isSprite: true })
     expect(element).toBeInstanceOf(PIXI.Sprite)
   })
@@ -43,7 +43,10 @@ describe('createElement', () => {
   })
 
   test('create BitmapText', () => {
-    const element = createElement(TYPES.BitmapText, { text: 'foobar', style: { font: '35px Desyrel' } })
+    const element = createElement(TYPES.BitmapText, {
+      text: 'foobar',
+      style: { fontName: 'Desyrel', fontSize: 35, align: 'left' },
+    })
     expect(element).toBeInstanceOf(PIXI.BitmapText)
   })
 
@@ -68,16 +71,10 @@ describe('createElement', () => {
   })
 
   test('create SimpleRope', () => {
-    const element = createElement(
-      TYPES.SimpleRope,
-      {
-        texture: emptyTexture,
-        points: [
-          new PIXI.Point(0, 0),
-          new PIXI.Point(20, 20),
-        ],
-      },
-    )
+    const element = createElement(TYPES.SimpleRope, {
+      texture: emptyTexture,
+      points: [new PIXI.Point(0, 0), new PIXI.Point(20, 20)],
+    })
     expect(element).toBeInstanceOf(PIXI.SimpleRope)
   })
 
@@ -119,8 +116,16 @@ describe('element.applyProps', () => {
     const element = createElement(TYPES.Sprite, { image: './image.png' })
     expect(spy).lastCalledWith('./image.png')
 
-    element.applyProps(element, { image: './image.png' }, { image: './new-image.png' })
+    const changed = element.applyProps(element, { image: './image.png' }, { image: './new-image.png' })
     expect(spy).lastCalledWith('./new-image.png')
+    expect(changed).toBeFalsy()
+  })
+
+  test('Sprite.applyProps texture', () => {
+    const element = createElement(TYPES.Sprite, { texture: emptyTexture })
+
+    const changed = element.applyProps(element, { texture: emptyTexture }, { image: './image.png' })
+    expect(changed).toBeTruthy()
   })
 
   test('TilingSprite.applyProps exists', () => {
@@ -133,50 +138,54 @@ describe('element.applyProps', () => {
     const element = createElement(TYPES.TilingSprite, { image: './image.png' })
     expect(spy).lastCalledWith('./image.png')
 
-    element.applyProps(element, { image: './image.png' }, { image: './new-image.png' })
+    const changed = element.applyProps(element, { image: './image.png' }, { image: './new-image.png' })
+    expect(changed).toBeFalsy()
     expect(spy).lastCalledWith('./new-image.png')
   })
 
+  test('TilingSprite.applyProps texture', () => {
+    const element = createElement(TYPES.TilingSprite, { texture: emptyTexture })
+
+    const changed = element.applyProps(element, { texture: emptyTexture }, { image: './image.png' })
+    expect(changed).toBeTruthy()
+  })
+
+  test('TilingSprite.applyProps tilePosition', () => {
+    const oldPosition = '1, 2'
+    const newPosition = {x: 12, y: 20}
+    const element = createElement(TYPES.TilingSprite, { tilePosition: oldPosition, image: './image.png' })
+
+    const changed = element.applyProps(element, { tilePosition: oldPosition, image: './image.png' }, { tilePosition: newPosition, image: './image.png' })
+    expect(changed).toBeTruthy()
+  })
+
+
   test('SimpleRope.applyProps exists', () => {
-    const element = createElement(
-      TYPES.SimpleRope,
-      {
-        image: './image.png',
-        points: [
-          new PIXI.Point(0, 0),
-          new PIXI.Point(20, 20),
-        ],
-      },
-    )
+    const element = createElement(TYPES.SimpleRope, {
+      image: './image.png',
+      points: [new PIXI.Point(0, 0), new PIXI.Point(20, 20)],
+    })
     expect(element).toHaveProperty('applyProps')
     expect(spy).toHaveBeenCalledWith('./image.png')
   })
 
   test('SimpleRope.applyProps image', () => {
-    const element = createElement(
-      TYPES.SimpleRope,
-      {
-        image: './image.png',
-        points: [
-          new PIXI.Point(0, 0),
-          new PIXI.Point(20, 20),
-        ],
-      },
-    )
+    const element = createElement(TYPES.SimpleRope, {
+      image: './image.png',
+      points: [new PIXI.Point(0, 0), new PIXI.Point(20, 20)],
+    })
     expect(spy).lastCalledWith('./image.png')
 
-    element.applyProps(
+    const changed = element.applyProps(
       element,
       { image: './image.png' },
       {
         image: './new-image.png',
-        points: [
-          new PIXI.Point(0, 0),
-          new PIXI.Point(20, 20),
-        ],
-      },
+        points: [new PIXI.Point(0, 0), new PIXI.Point(20, 20)],
+      }
     )
     expect(spy).lastCalledWith('./new-image.png')
+    expect(changed).toBeTruthy()
   })
 
   test('NineSlicePlane.applyProps exists', () => {
@@ -189,8 +198,15 @@ describe('element.applyProps', () => {
     const element = createElement(TYPES.NineSlicePlane, { image: './image.png' })
     expect(spy).lastCalledWith('./image.png')
 
-    element.applyProps(element, { image: './image.png' }, { image: './new-image.png' })
+    const changed = element.applyProps(element, { image: './image.png' }, { image: './new-image.png' })
     expect(spy).lastCalledWith('./new-image.png')
+    expect(changed).toBeFalsy()
+  })
+
+  test('NineSlicePlane.applyProps texture', () => {
+    const element = createElement(TYPES.NineSlicePlane, { texture: emptyTexture })
+    const changed = element.applyProps(element, { texture: emptyTexture }, { image: './new-image.png' })
+    expect(changed).toBeTruthy()
   })
 
   test('SimpleMesh.applyProps exists', () => {
@@ -203,8 +219,16 @@ describe('element.applyProps', () => {
     const element = createElement(TYPES.SimpleMesh, { image: './image.png' })
     expect(spy).lastCalledWith('./image.png')
 
-    element.applyProps(element, { image: './image.png' }, { image: './new-image.png' })
+    let changed = element.applyProps(element, { image: './image.png' }, { image: './new-image.png' })
     expect(spy).lastCalledWith('./new-image.png')
+    expect(changed).toBeFalsy()
+  })
+
+  test('SimpleMesh.applyProps texture', () => {
+    const element = createElement(TYPES.SimpleMesh, { texture: emptyTexture })
+
+    let changed = element.applyProps(element, { texture: emptyTexture }, { image: './new-image.png' })
+    expect(changed).toBeTruthy()
   })
 
   test('Graphics.applyProps exists', () => {
@@ -221,8 +245,9 @@ describe('element.applyProps', () => {
     const element = createElement(TYPES.Graphics, { draw: spy })
     expect(spy).toHaveBeenCalledTimes(1)
 
-    element.applyProps(element, { draw: spy }, { draw: spy })
+    const applied = element.applyProps(element, { draw: spy }, { draw: spy })
     expect(spy).toHaveBeenCalledTimes(1)
+    expect(applied).toBeFalsy()
   })
 
   test('Graphics.applyProps draw prevented twice', () => {
@@ -230,16 +255,19 @@ describe('element.applyProps', () => {
     const draw2 = jest.fn()
     const props = { draw: draw1 }
     const nextProps = { draw: draw2 }
+    let applied = false;
     const element = createElement(TYPES.Graphics, props)
-    element.applyProps(element, props, props)
-    element.applyProps(element, props, props)
+    applied = element.applyProps(element, props, props)
+    expect(applied).toBeFalsy()
+    applied = element.applyProps(element, props, props)
+    expect(applied).toBeFalsy()
     expect(draw1).toHaveBeenCalledTimes(1)
-    element.applyProps(element, props, nextProps)
-    element.applyProps(element, nextProps, nextProps)
+    applied = element.applyProps(element, props, nextProps)
+    expect(applied).toBeTruthy()
+    applied = element.applyProps(element, nextProps, nextProps)
+    expect(applied).toBeFalsy()
     expect(draw2).toHaveBeenCalledTimes(1)
   })
-
-
 })
 
 describe('PixiComponent', () => {
@@ -267,14 +295,19 @@ describe('PixiComponent', () => {
 
   test('create injected component', () => {
     const scoped = jest.fn()
+    const config = {
+      destroyChildren: true,
+      destroy: true
+    }
 
     const lifecycle = {
       create: jest.fn(() => new PIXI.Graphics()),
       didMount: jest.fn(),
       willUnmount: jest.fn(),
-      applyProps: jest.fn(function() {
+      applyProps: jest.fn(function () {
         scoped(this)
       }),
+      config: config
     }
 
     new PixiComponent('Rectangle', lifecycle)
@@ -285,6 +318,7 @@ describe('PixiComponent', () => {
     expect(element.didMount).toBeDefined()
     expect(element.willUnmount).toBeDefined()
     expect(element.applyProps).toBeDefined()
+    expect(element.config).toBe(config)
     expect(element).toBeInstanceOf(PIXI.Graphics)
     expect(lifecycle.create).toHaveBeenCalledTimes(1)
     expect(lifecycle.create).toHaveBeenCalledWith(props)
